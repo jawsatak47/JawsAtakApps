@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JAWSATAK APPS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0a0c08;
+    --surface: #14170f;
+    --surface-hover: #1a1e14;
+    --border: #262b1f;
+    --border-soft: #1d2117;
+    --text: #eaeee0;
+    --text-muted: #838a76;
+    --text-dim: #565e4a;
+    --qf: #b6ff3c;
+    --ja: #ff7a3d;
+    --font-display: 'Archivo Black', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+  }
+
+  *{ box-sizing: border-box; margin:0; padding:0; }
+
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(182,255,60,0.05), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 10%, rgba(255,122,61,0.04), transparent 60%),
+      var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    padding: 48px 32px 80px;
+  }
+
+  .wrap{ max-width: 1180px; margin: 0 auto; }
+
+  header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    flex-wrap: wrap;
+    gap: 24px;
+    margin-bottom: 40px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo{
+    font-family: var(--font-display);
+    font-size: clamp(28px, 4vw, 42px);
+    letter-spacing: -0.5px;
+    line-height: 1;
+  }
+  .logo span{ color: var(--qf); }
+
+  .drip{ display:block; margin-top: 8px; width: 220px; max-width: 60vw; }
+
+  .tagline{
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 10px;
+  }
+
+  .slot-count{
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: right;
+  }
+  .slot-count b{ color: var(--qf); }
+
+  .controls{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .filters{ display:flex; gap: 8px; flex-wrap:wrap; }
+
+  .filter-chip{
+    font-family: var(--font-mono);
+    font-size: 12px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+    cursor:pointer;
+    transition: all 0.12s ease;
+    display:flex;
+    align-items:center;
+    gap: 7px;
+  }
+  .filter-chip .dot{ width:7px; height:7px; border-radius:50%; background: var(--text-dim); }
+  .filter-chip:hover{ border-color: var(--text-dim); color: var(--text); }
+  .filter-chip.active{ border-color: var(--qf); color: var(--qf); background: rgba(182,255,60,0.06); }
+  .filter-chip.active .dot{ background: var(--qf); }
+  .filter-chip[data-brand="jawsatak47"].active{ border-color: var(--ja); color: var(--ja); background: rgba(255,122,61,0.06); }
+  .filter-chip[data-brand="jawsatak47"].active .dot{ background: var(--ja); }
+
+  .search{
+    font-family: var(--font-mono);
+    font-size: 13px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 9px 14px;
+    border-radius: 4px;
+    width: 220px;
+    outline:none;
+    transition: border-color 0.12s ease;
+  }
+  .search::placeholder{ color: var(--text-dim); }
+  .search:focus{ border-color: var(--qf); }
+
+  .grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+
+  .card{
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 20px 20px 18px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, transform 0.15s ease, background 0.15s ease;
+    display:flex;
+    flex-direction:column;
+    gap: 14px;
+    min-height: 148px;
+  }
+  .card::before{
+    content:'';
+    position:absolute; top:0; left:0; right:0; height: 3px;
+    background: var(--qf);
+    opacity: 0.85;
+  }
+  .card[data-brand="jawsatak47"]::before{ background: var(--ja); }
+  .card[data-brand="other"]::before{ background: var(--text-dim); }
+  .card:hover{ border-color: var(--border-soft); background: var(--surface-hover); transform: translateY(-2px); }
+
+  .card-icon{
+    width: 38px; height:38px;
+    border-radius: 6px;
+    display:flex; align-items:center; justify-content:center;
+    font-family: var(--font-display);
+    font-size: 16px;
+    background: rgba(182,255,60,0.08);
+    color: var(--qf);
+  }
+  .card[data-brand="jawsatak47"] .card-icon{ background: rgba(255,122,61,0.08); color: var(--ja); }
+  .card[data-brand="other"] .card-icon{ background: rgba(255,255,255,0.05); color: var(--text-muted); }
+
+  .card-name{ font-weight: 700; font-size: 16.5px; color: var(--text); line-height: 1.25; }
+  .card-url{
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--text-dim);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .card-meta{ margin-top: auto; display:flex; align-items:center; justify-content: space-between; gap: 8px; }
+  .status{ display:flex; align-items:center; gap:6px; font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.4px; text-transform: uppercase; color: var(--text-muted); }
+  .status .dot{ width:6px; height:6px; border-radius:50%; }
+  .status.live .dot{ background: var(--qf); box-shadow: 0 0 6px rgba(182,255,60,0.6); }
+  .status.building .dot{ background: var(--ja); box-shadow: 0 0 6px rgba(255,122,61,0.5); }
+  .status.idea .dot{ background: var(--text-dim); }
+  .brand-tag{ font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); }
+
+  .empty-state{
+    grid-column: 1/-1;
+    text-align:center;
+    padding: 70px 20px;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    color: var(--text-muted);
+  }
+
+  @media (max-width: 560px){
+    body{ padding: 32px 16px 60px; }
+    .controls{ flex-direction: column; align-items: stretch; }
+    .search{ width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <div class="logo">JAWSATAK<span>APPS</span></div>
+      <svg class="drip" viewBox="0 0 220 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2 4 C 40 4, 40 4, 60 4 C 65 4, 65 12, 60 12 C 56 12, 56 6, 60 6 C 90 6, 120 2, 150 4 C 155 4, 155 10, 151 10 C 148 10, 148 6, 152 6 C 175 6, 195 3, 218 4" stroke="#b6ff3c" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+      </svg>
+      <div class="tagline">// central hub — all builds, one wall</div>
+    </div>
+    <div class="slot-count" id="slotCount"></div>
+  </header>
+
+  <div class="controls">
+    <div class="filters" id="filters">
+      <button class="filter-chip active" data-brand="all"><span class="dot"></span>All</button>
+      <button class="filter-chip" data-brand="quarkforce"><span class="dot"></span>QuarkForce</button>
+      <button class="filter-chip" data-brand="jawsatak47"><span class="dot"></span>JawsAtak47</button>
+      <button class="filter-chip" data-brand="other"><span class="dot"></span>Other</button>
+    </div>
+    <input class="search" id="search" placeholder="search apps..." />
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+</div>
+
+<script>
+/* ======================================================================
+   YOUR APPS — EDIT THIS LIST
+   ======================================================================
+   30 slots below, ready to go. To add an app, fill in a slot like this:
+
+     { name: "QuarkZine Tracker", url: "https://yoursite.com/tracker",
+       brand: "quarkforce", status: "live" },
+
+   FIELD GUIDE:
+   - name:   whatever you want the card to say
+   - url:    full link (with or without https://, either works)
+   - brand:  "quarkforce"  |  "jawsatak47"  |  "other"
+   - status: "live"  |  "building"  |  "idea"
+
+   Leave name and url as empty strings ("") on any slot you're not
+   using yet — those slots are simply skipped and won't show a card.
+   Need more than 30? Just copy a blank line and add it below.
+   ====================================================================== */
+
+const APPS = [
+  { name: "", url: "", brand: "quarkforce", status: "live" },  // 1
+  { name: "", url: "", brand: "quarkforce", status: "live" },  // 2
+  { name: "", url: "", brand: "quarkforce", status: "live" },  // 3
+  { name: "", url: "", brand: "quarkforce", status: "live" },  // 4
+  { name: "", url: "", brand: "quarkforce", status: "live" },  // 5
+  { name: "", url: "", brand: "quarkforce", status: "live" },  // 6
+  { name: "", url: "", brand: "quarkforce", status: "live" },  // 7
+  { name: "", url: "", brand: "quarkforce", status: "live" },  // 8
+  { name: "", url: "", brand: "quarkforce", status: "live" },  // 9
+  { name: "", url: "", brand: "quarkforce", status: "live" },  // 10
+  { name: "", url: "", brand: "quarkforce", status: "live" },  // 11
+  { name: "", url: "", brand: "quarkforce", status: "live" },  // 12
+  { name: "", url: "", brand: "quarkforce", status: "live" },  // 13
+  { name: "", url: "", brand: "quarkforce", status: "live" },  // 14
+  { name: "", url: "", brand: "quarkforce", status: "live" },  // 15
+  { name: "", url: "", brand: "jawsatak47", status: "live" },  // 16
+  { name: "", url: "", brand: "jawsatak47", status: "live" },  // 17
+  { name: "", url: "", brand: "jawsatak47", status: "live" },  // 18
+  { name: "", url: "", brand: "jawsatak47", status: "live" },  // 19
+  { name: "", url: "", brand: "jawsatak47", status: "live" },  // 20
+  { name: "", url: "", brand: "jawsatak47", status: "live" },  // 21
+  { name: "", url: "", brand: "jawsatak47", status: "live" },  // 22
+  { name: "", url: "", brand: "jawsatak47", status: "live" },  // 23
+  { name: "", url: "", brand: "jawsatak47", status: "live" },  // 24
+  { name: "", url: "", brand: "jawsatak47", status: "live" },  // 25
+  { name: "", url: "", brand: "jawsatak47", status: "live" },  // 26
+  { name: "", url: "", brand: "other",      status: "live" },  // 27
+  { name: "", url: "", brand: "other",      status: "live" },  // 28
+  { name: "", url: "", brand: "other",      status: "live" },  // 29
+  { name: "", url: "", brand: "other",      status: "live" },  // 30
+];
+
+/* ====================================================================
+   Nothing below this line needs editing.
+   ==================================================================== */
+
+let activeFilter = 'all';
+
+function brandLabel(b){
+  if(b==='quarkforce') return 'QuarkForce';
+  if(b==='jawsatak47') return 'JawsAtak47';
+  return 'Other';
+}
+
+function iconFor(name){
+  return (name || '?').trim().charAt(0).toUpperCase() || '?';
+}
+
+function normalizeUrl(u){
+  u = u.trim();
+  if(!/^https?:\/\//i.test(u)) u = 'https://' + u;
+  return u;
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function render(){
+  const grid = document.getElementById('grid');
+  const q = document.getElementById('search').value.trim().toLowerCase();
+
+  const filled = APPS.filter(a => a.name.trim() !== '' && a.url.trim() !== '');
+
+  document.getElementById('slotCount').innerHTML =
+    `<b>${filled.length}</b> / ${APPS.length} slots filled`;
+
+  const visible = filled.filter(a => {
+    const matchesBrand = activeFilter === 'all' || a.brand === activeFilter;
+    const matchesQuery = !q || a.name.toLowerCase().includes(q) || a.url.toLowerCase().includes(q);
+    return matchesBrand && matchesQuery;
+  });
+
+  if(visible.length === 0){
+    grid.innerHTML = `
+      <div class="empty-state">
+        ${filled.length === 0
+          ? 'No apps added yet — open the HTML file and fill in the APPS list at the top of the script.'
+          : 'Nothing matches that filter or search.'}
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = visible.map(a => `
+    <div class="card" data-brand="${a.brand}" data-url="${escapeHtml(normalizeUrl(a.url))}">
+      <div class="card-icon">${iconFor(a.name)}</div>
+      <div>
+        <div class="card-name">${escapeHtml(a.name)}</div>
+        <div class="card-url">${escapeHtml(a.url.replace(/^https?:\/\//,''))}</div>
+      </div>
+      <div class="card-meta">
+        <div class="status ${a.status}"><span class="dot"></span>${a.status}</div>
+        <div class="brand-tag">${brandLabel(a.brand)}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+document.getElementById('grid').addEventListener('click', (e) => {
+  const card = e.target.closest('.card');
+  if(card && card.dataset.url) window.open(card.dataset.url, '_blank');
+});
+
+document.getElementById('filters').addEventListener('click', (e) => {
+  const chip = e.target.closest('.filter-chip');
+  if(!chip) return;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  activeFilter = chip.dataset.brand;
+  render();
+});
+
+document.getElementById('search').addEventListener('input', render);
+
+render();
+</script>
+</body>
+</html>
