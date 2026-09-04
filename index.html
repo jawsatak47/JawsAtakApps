@@ -106,7 +106,13 @@
   .filter-chip[data-brand="jawsatak47"].active{ border-color: var(--ja); color: var(--ja); background: rgba(255,122,61,0.06); }
   .filter-chip[data-brand="jawsatak47"].active .dot{ background: var(--ja); }
 
-  .search{
+  .search-sort-group{
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .search, .sort-select{
     font-family: var(--font-mono);
     font-size: 13px;
     background: var(--surface);
@@ -114,12 +120,14 @@
     color: var(--text);
     padding: 9px 14px;
     border-radius: 4px;
-    width: 220px;
     outline:none;
     transition: border-color 0.12s ease;
   }
+  .search{ width: 200px; }
   .search::placeholder{ color: var(--text-dim); }
-  .search:focus{ border-color: var(--qf); }
+  .search:focus, .sort-select:focus{ border-color: var(--qf); }
+
+  .sort-select{ cursor: pointer; }
 
   .grid{
     display:grid;
@@ -147,6 +155,7 @@
     opacity: 0.85;
   }
   .card[data-brand="jawsatak47"]::before{ background: var(--ja); }
+  .card[data-brand="canvaswars"]::before{ background: #3dcdff; }
   .card[data-brand="other"]::before{ background: var(--text-dim); }
   .card:hover{ border-color: var(--border-soft); background: var(--surface-hover); transform: translateY(-2px); }
 
@@ -158,9 +167,8 @@
     font-size: 16px;
     background: rgba(182,255,60,0.08);
     color: var(--qf);
+    transition: background 0.2s, color 0.2s;
   }
-  .card[data-brand="jawsatak47"] .card-icon{ background: rgba(255,122,61,0.08); color: var(--ja); }
-  .card[data-brand="other"] .card-icon{ background: rgba(255,255,255,0.05); color: var(--text-muted); }
 
   .card-name{ font-weight: 700; font-size: 16.5px; color: var(--text); line-height: 1.25; }
   .card-url{
@@ -172,7 +180,7 @@
     white-space: nowrap;
   }
 
-  .card-meta{ margin-top: auto; display:flex; align-items:center; justify-content: space-between; gap: 8px; }
+  .card-meta{ margin-top: auto; display:flex; align-items:center; justify- space-between; gap: 8px; }
   .status{ display:flex; align-items:center; gap:6px; font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.4px; text-transform: uppercase; color: var(--text-muted); }
   .status .dot{ width:6px; height:6px; border-radius:50%; }
   .status.live .dot{ background: var(--qf); box-shadow: 0 0 6px rgba(182,255,60,0.6); }
@@ -192,7 +200,8 @@
   @media (max-width: 560px){
     body{ padding: 32px 16px 60px; }
     .controls{ flex-direction: column; align-items: stretch; }
-    .search{ width: 100%; }
+    .search-sort-group{ flex-direction: column; }
+    .search, .sort-select{ width: 100%; }
   }
 </style>
 </head>
@@ -214,11 +223,17 @@
     <div class="filters" id="filters">
       <button class="filter-chip active" data-brand="all"><span class="dot"></span>All</button>
       <button class="filter-chip" data-brand="quarkforce"><span class="dot"></span>QuarkForce</button>
-      <button class="filter-chip" data-brand="Jawsatak47"><span class="dot"></span>JawsAtak47</button>
-      <button class="filter-chip" data-brand="CanvasWars"><span class="dot"></span>CanvasWars</button>
+      <button class="filter-chip" data-brand="jawsatak47"><span class="dot"></span>JawsAtak47</button>
+      <button class="filter-chip" data-brand="canvaswars"><span class="dot"></span>CanvasWars</button>
       <button class="filter-chip" data-brand="other"><span class="dot"></span>Other</button>
     </div>
-    <input class="search" id="search" placeholder="search apps..." />
+    <div class="search-sort-group">
+      <select class="sort-select" id="sortSelect">
+        <option value="added">Date Added</option>
+        <option value="alpha">Alphabetize</option>
+      </select>
+      <input class="search" id="search" placeholder="search apps..." />
+    </div>
   </div>
 
   <div class="grid" id="grid"></div>
@@ -226,83 +241,72 @@
 </div>
 
 <script>
-/* ======================================================================
-   YOUR APPS — EDIT THIS LIST
-   ======================================================================
-   30 slots below, ready to go. To add an app, fill in a slot like this:
-
-     { name: "QuarkZine Tracker", url: "https://yoursite.com/tracker",
-       brand: "quarkforce", status: "live" },
-
-   FIELD GUIDE:
-   - name:   whatever you want the card to say
-   - url:    full link (with or without https://, either works)
-   - brand:  "quarkforce"  |  "jawsatak47"  |  "other"
-   - status: "live"  |  "building"  |  "idea"
-
-   Leave name and url as empty strings ("") on any slot you're not
-   using yet — those slots are simply skipped and won't show a card.
-   Need more than 30? Just copy a blank line and add it below.
-   ====================================================================== */
-
 const APPS = [
   { name: "bookingsgpt", url: "https://jawsatak47.github.io/bookinggpt/", brand: "other", status: "live" },
   { name: "jaws service menue", url: "https://jawsatak47.github.io/jawscommercial/", brand: "other", status: "live" },
   { name: "bookngsclaud", url: "https://jawsatak47.github.io/bookingsclaud/", brand: "other", status: "live" },
-  { name: "Bartlett-Middleford Mural", url: "https://jawsatak47.github.io/Bartlett-Middleford/", brand: "Jawsatak47", status: "live" },
+  { name: "Bartlett-Middleford Mural", url: "https://jawsatak47.github.io/Bartlett-Middleford/", brand: "jawsatak47", status: "live" },
   { name: "QuarkZine", url: "https://jawsatak47.github.io/QuarkZine-Homease/", brand: "quarkforce", status: "live" },
-  { name: "Infographics", url: "https://jawsatak47.github.io/Infographics/", brand: "quarkforce", status: "live" },  // 1
-  { name: "JawsAtakTV", url: "https://jawsatak47.github.io/JawsAtakTV/", brand: "Jawsatak47", status: "live" },
-  { name: "CanvasWars MonsTober", url: "https://jawsatak47.github.io/CWSmonstober/", brand: "CanvasWars", status: "live" },  // 1
-  { name: "CanvasWarsMonsTober info", url: "https://jawsatak47.github.io/MonsTober-stage1/", brand: "CanvasWars", status: "live" },  // 2
-  { name: "Claude Music agent", url: "https://jawsatak47.github.io/claudAgent/", brand: "Jawsatak47", status: "live" },  // 3
-  { name: "Gemeni Music Agent", url: "https://jawsatak47.github.io/aiGem/", brand: "Jawsatak47", status: "live" },  // 4
-  { name: "Gloria BirdMoney", url: "https://jawsatak47.github.io/GloriaBirdmoney/", brand: "quarkforce", status: "live" },  // 5
-  { name: "TonySharks", url: "https://jawsatak47.github.io/TonySharks/", brand: "Jawsatak47", status: "live" },  // 6
-  { name: "SeaWalk2", url: "https://jawsatak47.github.io/SeaWalk2/", brand: "Jawsatak47", status: "live" },  // 7
-  { name: "Write Kid Book", url: "https://jawsatak47.github.io/ChildrensBooks", brand: "other", status: "live" },  // 8
-  { name: "Write YA Book", url: "https://jawsatak47.github.io/MGYAbook/", brand: "other", status: "live" },  // 9
-  { name: "SW Media Sprint", url: "https://jawsatak47.github.io/mediasprintSW/", brand: "Jawsatak47", status: "live" },  // 10
-  { name: "YourDogsFavoriteBurgerJoint", url: "https://jawsatak47.github.io/DogsFavBurg/", brand: "other", status: "live" },  // 11
-  { name: "QuarkForce Characters", url: "https://jawsatak47.github.io/QF1A/", brand: "quarkforce", status: "live" },  // 12
-  { name: "QuarkForce Universe / News", url: "https://jawsatak47.github.io/QF1/", brand: "quarkforce", status: "live" },  // 13
-  { name: "QF services", url: "https://jawsatak47.github.io/QF-service/", brand: "quarkforce", status: "live" },  // 14
-  { name: "Jaws-Disney", url: "https://jawsatak47.github.io/Jaws-Disney/", brand: "quarkforce", status: "live" },  // 14
-  { name: "MonsTober Main Gallery", url: "https://jawsatak47.github.io/MonsTober/", brand: "quarkforce", status: "live" },  // 15
+  { name: "Infographics", url: "https://jawsatak47.github.io/Infographics/", brand: "quarkforce", status: "live" },
+  { name: "JawsAtakTV", url: "https://jawsatak47.github.io/JawsAtakTV/", brand: "jawsatak47", status: "live" },
+  { name: "CanvasWars MonsTober", url: "https://jawsatak47.github.io/CWSmonstober/", brand: "canvaswars", status: "live" },
+  { name: "CanvasWarsMonsTober info", url: "https://jawsatak47.github.io/MonsTober-stage1/", brand: "canvaswars", status: "live" },
+  { name: "Claude Music agent", url: "https://jawsatak47.github.io/claudAgent/", brand: "jawsatak47", status: "live" },
+  { name: "Gemeni Music Agent", url: "https://jawsatak47.github.io/aiGem/", brand: "jawsatak47", status: "live" },
+  { name: "Gloria BirdMoney", url: "https://jawsatak47.github.io/GloriaBirdmoney/", brand: "quarkforce", status: "live" },
+  { name: "TonySharks", url: "https://jawsatak47.github.io/TonySharks/", brand: "jawsatak47", status: "live" },
+  { name: "SeaWalk2", url: "https://jawsatak47.github.io/SeaWalk2/", brand: "jawsatak47", status: "live" },
+  { name: "Write Kid Book", url: "https://jawsatak47.github.io/ChildrensBooks", brand: "other", status: "live" },
+  { name: "Write YA Book", url: "https://jawsatak47.github.io/MGYAbook/", brand: "other", status: "live" },
+  { name: "SW Media Sprint", url: "https://jawsatak47.github.io/mediasprintSW/", brand: "jawsatak47", status: "live" },
+  { name: "YourDogsFavoriteBurgerJoint", url: "https://jawsatak47.github.io/DogsFavBurg/", brand: "other", status: "live" },
+  { name: "QuarkForce Characters", url: "https://jawsatak47.github.io/QF1A/", brand: "quarkforce", status: "live" },
+  { name: "QuarkForce Universe / News", url: "https://jawsatak47.github.io/QF1/", brand: "quarkforce", status: "live" },
+  { name: "QF services", url: "https://jawsatak47.github.io/QF-service/", brand: "quarkforce", status: "live" },
+  { name: "Jaws-Disney", url: "https://jawsatak47.github.io/Jaws-Disney/", brand: "quarkforce", status: "live" },
+  { name: "MonsTober Main Gallery", url: "https://jawsatak47.github.io/MonsTober/", brand: "quarkforce", status: "live" },
   { name: "money sprint overview", url: "https://jawsatak47.github.io/money-sprint-overview/", brand: "jawsatak47", status: "live" },
-  { name: "MediaSprint for followers", url: "https://jawsatak47.github.io/mediasprint/", brand: "Jawsatak47", status: "live" },  // 16
-  { name: "QuarkUniversity Class2", url: "https://jawsatak47.github.io/QU-class2/", brand: "quarkforce", status: "live" },  // 17
-  { name: "QuarkUniversity Class1", url: "https://jawsatak47.github.io/QU-class1/", brand: "quarkforce", status: "live" },  // 18
-  { name: "RogueArtists", url: "https://jawsatak47.github.io/RogueArtist/", brand: "jawsatak47", status: "live" },  // 19
-  { name: "CanvasWars Main", url: "https://jawsatak47.github.io/CWS/", brand: "CanvasWars", status: "live" },  // 20
-  { name: "QuarkUniversity", url: "https://jawsatak47.github.io/QuarkUniversity/", brand: "quarkforce", status: "live" },  // 21
-  { name: "LivingBlade -wisdom-", url: "https://jawsatak47.github.io/livint-blade/", brand: "other", status: "live" },  // 22
-  { name: "ApexAnimals", url: "https://jawsatak47.github.io/Apex/", brand: "other", status: "live" },  // 23
-  { name: "LeafCutterAnts", url: "https://jawsatak47.github.io/LeafCutterAnts/", brand: "other", status: "live" },  // 24
-  { name: "1st CWS attempt", url: "https://jawsatak47.github.io/canvaswarsrsTry001/", brand: "CanvasWars", status: "live" },  // 25
-  { name: "ArtistIncome builder", url: "https://jawsatak47.github.io/Artist-income-builder/", brand: "jawsatak47", status: "live" },  // 26
-  { name: "BuzzCap v1", url: "https://jawsatak47.github.io/BuzzCap1/", brand: "other",      status: "live" },  // 27
-  { name: "Buzz Captian v2", url: "https://jawsatak47.github.io/BuzzCaptian/", brand: "other",      status: "live" },  // 28
-  { name: "JawsSpreadShirt", url: "https://jawsatak47.myspreadshop.com/", brand: "Jawsatak47",      status: "live" },  // 29
-  { name: "SinicalSkateboards", url: "https://www.boardpusher.com/profile/SinicalSkateCo", brand: "Jawsatak47",      status: "live" },  // 29
-  { name: "JawsGraffiti Square", url: "jawsgraffiti.square.site", brand: "Jawsatak47",      status: "live" },  // 29
-  { name: "JawsGraffiti.com", url: "https://jawsatak47.wixsite.com/jaws", brand: "Jawsatak47",      status: "live" }, 
+  { name: "MediaSprint for followers", url: "https://jawsatak47.github.io/mediasprint/", brand: "jawsatak47", status: "live" },
+  { name: "QuarkUniversity Class2", url: "https://jawsatak47.github.io/QU-class2/", brand: "quarkforce", status: "live" },
+  { name: "QuarkUniversity Class1", url: "https://jawsatak47.github.io/QU-class1/", brand: "quarkforce", status: "live" },
+  { name: "RogueArtists", url: "https://jawsatak47.github.io/RogueArtist/", brand: "jawsatak47", status: "live" },
+  { name: "CanvasWars Main", url: "https://jawsatak47.github.io/CWS/", brand: "canvaswars", status: "live" },
+  { name: "QuarkUniversity", url: "https://jawsatak47.github.io/QuarkUniversity/", brand: "quarkforce", status: "live" },
+  { name: "LivingBlade -wisdom-", url: "https://jawsatak47.github.io/livint-blade/", brand: "other", status: "live" },
+  { name: "ApexAnimals", url: "https://jawsatak47.github.io/Apex/", brand: "other", status: "live" },
+  { name: "LeafCutterAnts", url: "https://jawsatak47.github.io/LeafCutterAnts/", brand: "other", status: "live" },
+  { name: "1st CWS attempt", url: "https://jawsatak47.github.io/canvaswarsrsTry001/", brand: "canvaswars", status: "live" },
+  { name: "ArtistIncome builder", url: "https://jawsatak47.github.io/Artist-income-builder/", brand: "jawsatak47", status: "live" },
+  { name: "BuzzCap v1", url: "https://jawsatak47.github.io/BuzzCap1/", brand: "other", status: "live" },
+  { name: "Buzz Captian v2", url: "https://jawsatak47.github.io/BuzzCaptian/", brand: "other", status: "live" },
+  { name: "JawsSpreadShirt", url: "https://jawsatak47.myspreadshop.com/", brand: "jawsatak47", status: "live" },
+  { name: "SinicalSkateboards", url: "https://www.boardpusher.com/profile/SinicalSkateCo", brand: "jawsatak47", status: "live" },
+  { name: "JawsGraffiti Square", url: "jawsgraffiti.square.site", brand: "jawsatak47", status: "live" },
+  { name: "JawsGraffiti.com", url: "https://jawsatak47.wixsite.com/jaws", brand: "jawsatak47", status: "live" },
 ];
-
-/* ====================================================================
-   Nothing below this line needs editing.
-   ==================================================================== */
 
 let activeFilter = 'all';
 
 function brandLabel(b){
-  if(b==='quarkforce') return 'QuarkForce';
-  if(b==='jawsatak47') return 'JawsAtak47';
+  const lower = (b || '').toLowerCase();
+  if(lower === 'quarkforce') return 'QuarkForce';
+  if(lower === 'jawsatak47') return 'JawsAtak47';
+  if(lower === 'canvaswars') return 'CanvasWars';
   return 'Other';
 }
 
 function iconFor(name){
   return (name || '?').trim().charAt(0).toUpperCase() || '?';
+}
+
+// Map letters A-Z (and numbers) to unique HSL color styles
+function letterColorStyle(char){
+  const code = char.toUpperCase().charCodeAt(0);
+  if(code >= 65 && code <= 90){ // A-Z
+    const hue = Math.round(((code - 65) / 26) * 360);
+    return `background: hsla(${hue}, 80%, 50%, 0.12); color: hsl(${hue}, 85%, 65%);`;
+  }
+  return `background: rgba(255,255,255,0.08); color: var(--text-muted);`;
 }
 
 function normalizeUrl(u){
@@ -320,17 +324,22 @@ function escapeHtml(str){
 function render(){
   const grid = document.getElementById('grid');
   const q = document.getElementById('search').value.trim().toLowerCase();
+  const sort = document.getElementById('sortSelect').value;
 
   const filled = APPS.filter(a => a.name.trim() !== '' && a.url.trim() !== '');
 
   document.getElementById('slotCount').innerHTML =
     `<b>${filled.length}</b> / ${APPS.length} slots filled`;
 
-  const visible = filled.filter(a => {
-    const matchesBrand = activeFilter === 'all' || a.brand === activeFilter;
+  let visible = filled.filter(a => {
+    const matchesBrand = activeFilter === 'all' || a.brand.toLowerCase() === activeFilter;
     const matchesQuery = !q || a.name.toLowerCase().includes(q) || a.url.toLowerCase().includes(q);
     return matchesBrand && matchesQuery;
   });
+
+  if(sort === 'alpha'){
+    visible.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+  }
 
   if(visible.length === 0){
     grid.innerHTML = `
@@ -342,24 +351,30 @@ function render(){
     return;
   }
 
-  grid.innerHTML = visible.map(a => `
-    <div class="card" data-brand="${a.brand}" data-url="${escapeHtml(normalizeUrl(a.url))}">
-      <div class="card-icon">${iconFor(a.name)}</div>
-      <div>
-        <div class="card-name">${escapeHtml(a.name)}</div>
-        <div class="card-url">${escapeHtml(a.url.replace(/^https?:\/\//,''))}</div>
+  grid.innerHTML = visible.map(a => {
+    const char = iconFor(a.name);
+    const colorStyle = letterColorStyle(char);
+    const brandAttr = (a.brand || 'other').toLowerCase();
+
+    return `
+      <div class="card" data-brand="${brandAttr}" data-url="${escapeHtml(normalizeUrl(a.url))}">
+        <div class="card-icon" style="${colorStyle}">${char}</div>
+        <div>
+          <div class="card-name">${escapeHtml(a.name)}</div>
+          <div class="card-url">${escapeHtml(a.url.replace(/^https?:\/\//,''))}</div>
+        </div>
+        <div class="card-meta">
+          <div class="status ${a.status}"><span class="dot"></span>${a.status}</div>
+          <div class="brand-tag">${brandLabel(a.brand)}</div>
+        </div>
       </div>
-      <div class="card-meta">
-        <div class="status ${a.status}"><span class="dot"></span>${a.status}</div>
-        <div class="brand-tag">${brandLabel(a.brand)}</div>
-      </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 document.getElementById('grid').addEventListener('click', (e) => {
   const card = e.target.closest('.card');
-  if(card && card.dataset.url) window.open(card.dataset.url, '_blank');
+  if(card && card.dataset.url) window.open(card.dataset.url, '_blank', 'noopener,noreferrer');
 });
 
 document.getElementById('filters').addEventListener('click', (e) => {
@@ -367,11 +382,12 @@ document.getElementById('filters').addEventListener('click', (e) => {
   if(!chip) return;
   document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
   chip.classList.add('active');
-  activeFilter = chip.dataset.brand;
+  activeFilter = chip.dataset.brand.toLowerCase();
   render();
 });
 
 document.getElementById('search').addEventListener('input', render);
+document.getElementById('sortSelect').addEventListener('change', render);
 
 render();
 </script>
